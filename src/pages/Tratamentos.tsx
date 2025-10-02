@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pill, Clock, Plus, Calendar as CalendarIcon, ArrowLeft, Trash2, FileText, Play } from "lucide-react";
+import { Pill, Clock, Plus, Calendar as CalendarIcon, ArrowLeft, Trash2, FileText, Play, TrendingUp, Award, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -183,6 +183,40 @@ export default function Tratamentos() {
           </TabsContent>
 
           <TabsContent value="historico" className="space-y-4">
+            {/* Estatísticas de Adesão */}
+            <div className="grid grid-cols-3 gap-3">
+              <Card className="shadow-[var(--shadow-card)] border-primary/20">
+                <CardContent className="p-4 text-center">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
+                    <TrendingUp className="h-5 w-5 text-primary" />
+                  </div>
+                  <p className="text-2xl font-bold text-primary">87%</p>
+                  <p className="text-xs text-muted-foreground">Taxa de Adesão</p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-[var(--shadow-card)] border-warning/20">
+                <CardContent className="p-4 text-center">
+                  <div className="h-10 w-10 rounded-full bg-warning/10 flex items-center justify-center mx-auto mb-2">
+                    <Award className="h-5 w-5 text-warning" />
+                  </div>
+                  <p className="text-2xl font-bold text-warning">7</p>
+                  <p className="text-xs text-muted-foreground">Dias Seguidos</p>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-[var(--shadow-card)] border-success/20">
+                <CardContent className="p-4 text-center">
+                  <div className="h-10 w-10 rounded-full bg-success/10 flex items-center justify-center mx-auto mb-2">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                  </div>
+                  <p className="text-2xl font-bold text-success">156</p>
+                  <p className="text-xs text-muted-foreground">Doses Tomadas</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Calendário de Adesão */}
             <Card className="shadow-[var(--shadow-card)]">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -220,6 +254,54 @@ export default function Tratamentos() {
                   <div className="flex items-center gap-2 text-sm">
                     <div className="h-4 w-4 rounded bg-destructive/40" />
                     <span>Nenhum medicamento tomado</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Atividades Recentes */}
+            <Card className="shadow-[var(--shadow-card)]">
+              <CardHeader>
+                <CardTitle className="text-lg">Atividades Recentes</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
+                  <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">Losartana 50mg</p>
+                    <p className="text-xs text-muted-foreground">Tomado às 08:00 - Hoje</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-success/5 border border-success/20">
+                  <div className="h-8 w-8 rounded-full bg-success/10 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-success" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">Metformina 850mg</p>
+                    <p className="text-xs text-muted-foreground">Tomado às 12:00 - Hoje</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-warning/5 border border-warning/20">
+                  <div className="h-8 w-8 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+                    <AlertCircle className="h-4 w-4 text-warning" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">Losartana 50mg</p>
+                    <p className="text-xs text-muted-foreground">Atrasado - 20:00 esperado</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                  <div className="h-8 w-8 rounded-full bg-destructive/10 flex items-center justify-center shrink-0">
+                    <XCircle className="h-4 w-4 text-destructive" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">Sinvastatina 20mg</p>
+                    <p className="text-xs text-muted-foreground">Não tomado - Ontem às 22:00</p>
                   </div>
                 </div>
               </CardContent>

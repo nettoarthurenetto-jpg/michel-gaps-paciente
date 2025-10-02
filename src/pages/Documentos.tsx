@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { FileText, Download, Share2, Search, Filter, Clock } from "lucide-react";
+import { FileText, Download, Share2, Search, Filter, Clock, X, Stethoscope, FlaskConical, Pill, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import Header from "@/components/Header";
 
 interface Document {
@@ -15,9 +19,28 @@ interface Document {
   category: "prescricao" | "exame" | "atestado" | "receita";
 }
 
+interface TimelineEvent {
+  id: string;
+  type: "consulta" | "exame" | "receita";
+  date: string;
+  title: string;
+  doctor?: string;
+  summary?: string;
+  highlights?: string[];
+  medication?: string;
+}
+
 export default function Documentos() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [timelineOpen, setTimelineOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterTypes, setFilterTypes] = useState({
+    consulta: true,
+    exame: true,
+    receita: true,
+  });
+  const [filterPeriod, setFilterPeriod] = useState("all");
 
   const documents: Document[] = [
     {
@@ -61,6 +84,46 @@ export default function Documentos() {
     { id: "atestado", label: "Atestados", emoji: "📄" },
   ];
 
+  const timelineEvents: TimelineEvent[] = [
+    {
+      id: "1",
+      type: "consulta",
+      date: "15 Set 2024",
+      title: "Consulta com Dr. Silva",
+      doctor: "Dr. Silva",
+      summary: "Conversamos sobre sua pressão arterial, que está controlada. Ajustamos a dose do medicamento Losartana e pedi um novo exame de sangue para o próximo mês.",
+    },
+    {
+      id: "2",
+      type: "exame",
+      date: "10 Set 2024",
+      title: "Resultados do exame de Sangue recebidos",
+      highlights: ["✅ Colesterol total dentro do esperado", "⚠️ Glicose um pouco acima do recomendado"],
+    },
+    {
+      id: "3",
+      type: "receita",
+      date: "8 Set 2024",
+      title: "Nova receita para Losartana 50mg",
+      medication: "Losartana 50mg",
+    },
+    {
+      id: "4",
+      type: "consulta",
+      date: "20 Ago 2024",
+      title: "Consulta com Dr. Silva",
+      doctor: "Dr. Silva",
+      summary: "Realizamos uma revisão completa dos seus resultados. Sua saúde cardiovascular está estável e vamos manter o tratamento atual.",
+    },
+    {
+      id: "5",
+      type: "exame",
+      date: "10 Ago 2024",
+      title: "Resultados do Hemograma completo",
+      highlights: ["✅ Todos os valores dentro da normalidade"],
+    },
+  ];
+
   const getCategoryColor = (category: string) => {
     const colors = {
       prescricao: "bg-primary/10 text-primary border-primary/20",
@@ -70,6 +133,38 @@ export default function Documentos() {
     };
     return colors[category as keyof typeof colors] || "bg-muted";
   };
+
+  const getEventIcon = (type: string) => {
+    switch (type) {
+      case "consulta":
+        return <Stethoscope className="h-5 w-5" />;
+      case "exame":
+        return <FlaskConical className="h-5 w-5" />;
+      case "receita":
+        return <Pill className="h-5 w-5" />;
+      default:
+        return <FileText className="h-5 w-5" />;
+    }
+  };
+
+  const getEventColor = (type: string) => {
+    switch (type) {
+      case "consulta":
+        return "bg-primary/10 text-primary border-primary/20";
+      case "exame":
+        return "bg-secondary/10 text-secondary border-secondary/20";
+      case "receita":
+        return "bg-accent/10 text-accent border-accent/20";
+      default:
+        return "bg-muted";
+    }
+  };
+
+  const filteredTimeline = timelineEvents.filter((event) => {
+    if (!filterTypes[event.type]) return false;
+    // Add period filtering logic here if needed
+    return true;
+  });
 
   const filteredDocuments = documents.filter((doc) => {
     const matchesSearch = doc.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -96,9 +191,172 @@ export default function Documentos() {
                 <p className="text-sm text-muted-foreground mb-3">
                   Acesse sua linha do tempo médica completa
                 </p>
-                <Button variant="default" size="sm">
-                  Ver Histórico
-                </Button>
+                <Dialog open={timelineOpen} onOpenChange={setTimelineOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="default" size="sm">
+                      Ver Histórico
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col p-0">
+                    <DialogHeader className="px-6 py-4 border-b">
+                      <div className="flex items-center justify-between">
+                        <DialogTitle className="text-xl">Meu Histórico de Saúde</DialogTitle>
+                        <Sheet open={filterOpen} onOpenChange={setFilterOpen}>
+                          <SheetTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Filter className="h-5 w-5" />
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent side="bottom" className="h-[400px]">
+                            <SheetHeader>
+                              <SheetTitle>Filtrar Linha do Tempo</SheetTitle>
+                            </SheetHeader>
+                            <div className="space-y-6 mt-6">
+                              <div>
+                                <h4 className="font-semibold mb-3">Filtrar por tipo</h4>
+                                <div className="space-y-3">
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id="filter-consulta"
+                                      checked={filterTypes.consulta}
+                                      onCheckedChange={(checked) =>
+                                        setFilterTypes({ ...filterTypes, consulta: checked as boolean })
+                                      }
+                                    />
+                                    <Label htmlFor="filter-consulta" className="cursor-pointer">
+                                      Consultas
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id="filter-exame"
+                                      checked={filterTypes.exame}
+                                      onCheckedChange={(checked) =>
+                                        setFilterTypes({ ...filterTypes, exame: checked as boolean })
+                                      }
+                                    />
+                                    <Label htmlFor="filter-exame" className="cursor-pointer">
+                                      Exames
+                                    </Label>
+                                  </div>
+                                  <div className="flex items-center space-x-2">
+                                    <Checkbox
+                                      id="filter-receita"
+                                      checked={filterTypes.receita}
+                                      onCheckedChange={(checked) =>
+                                        setFilterTypes({ ...filterTypes, receita: checked as boolean })
+                                      }
+                                    />
+                                    <Label htmlFor="filter-receita" className="cursor-pointer">
+                                      Receitas
+                                    </Label>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div>
+                                <h4 className="font-semibold mb-3">Filtrar por período</h4>
+                                <div className="space-y-2">
+                                  <Button
+                                    variant={filterPeriod === "6months" ? "default" : "outline"}
+                                    className="w-full"
+                                    onClick={() => setFilterPeriod("6months")}
+                                  >
+                                    Últimos 6 meses
+                                  </Button>
+                                  <Button
+                                    variant={filterPeriod === "1year" ? "default" : "outline"}
+                                    className="w-full"
+                                    onClick={() => setFilterPeriod("1year")}
+                                  >
+                                    Último ano
+                                  </Button>
+                                  <Button
+                                    variant={filterPeriod === "all" ? "default" : "outline"}
+                                    className="w-full"
+                                    onClick={() => setFilterPeriod("all")}
+                                  >
+                                    Todo período
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <Button className="w-full" onClick={() => setFilterOpen(false)}>
+                                Aplicar Filtros
+                              </Button>
+                            </div>
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+                    </DialogHeader>
+
+                    <div className="flex-1 overflow-y-auto px-6 py-4">
+                      <div className="relative">
+                        {/* Timeline line */}
+                        <div className="absolute left-[23px] top-0 bottom-0 w-0.5 bg-border" />
+
+                        {/* Timeline events */}
+                        <div className="space-y-8">
+                          {filteredTimeline.map((event, index) => (
+                            <div key={event.id} className="relative pl-12">
+                              {/* Timeline dot */}
+                              <div
+                                className={`absolute left-0 w-12 h-12 rounded-full border-4 border-background flex items-center justify-center ${getEventColor(
+                                  event.type
+                                )}`}
+                              >
+                                {getEventIcon(event.type)}
+                              </div>
+
+                              {/* Event card */}
+                              <Card className="shadow-sm">
+                                <CardContent className="p-4">
+                                  <div className="flex items-start justify-between mb-2">
+                                    <h4 className="font-semibold">{event.title}</h4>
+                                    <span className="text-xs text-muted-foreground">{event.date}</span>
+                                  </div>
+
+                                  {event.type === "consulta" && (
+                                    <div className="space-y-2">
+                                      <p className="text-sm text-muted-foreground">
+                                        {event.summary}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {event.type === "exame" && (
+                                    <div className="space-y-2">
+                                      <div className="bg-muted/50 rounded-lg p-3 space-y-1">
+                                        {event.highlights?.map((highlight, idx) => (
+                                          <p key={idx} className="text-sm">
+                                            {highlight}
+                                          </p>
+                                        ))}
+                                      </div>
+                                      <Button variant="outline" size="sm" className="w-full">
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Ver exame completo
+                                      </Button>
+                                    </div>
+                                  )}
+
+                                  {event.type === "receita" && (
+                                    <div className="space-y-2">
+                                      <Button variant="outline" size="sm" className="w-full">
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Ver receita
+                                      </Button>
+                                    </div>
+                                  )}
+                                </CardContent>
+                              </Card>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
               <div className="text-4xl ml-4">📊</div>
             </div>

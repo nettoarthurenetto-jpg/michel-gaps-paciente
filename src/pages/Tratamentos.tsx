@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { Pill, Clock, Plus, Calendar as CalendarIcon } from "lucide-react";
+import { Pill, Clock, Plus, Calendar as CalendarIcon, ArrowLeft, Trash2, FileText, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 
 interface Medication {
@@ -14,10 +18,12 @@ interface Medication {
   instructions: string;
   times: string[];
   enabled: boolean;
+  doctor: string;
+  prescriptionDate: string;
 }
 
 export default function Tratamentos() {
-  const [medications] = useState<Medication[]>([
+  const [medications, setMedications] = useState<Medication[]>([
     {
       id: "1",
       name: "Losartana",
@@ -25,6 +31,8 @@ export default function Tratamentos() {
       instructions: "1 comprimido após o café da manhã",
       times: ["08:00", "20:00"],
       enabled: true,
+      doctor: "Dr(a). Michel Santos",
+      prescriptionDate: "15/01/2025",
     },
     {
       id: "2",
@@ -33,6 +41,8 @@ export default function Tratamentos() {
       instructions: "1 comprimido antes do almoço",
       times: ["12:00"],
       enabled: true,
+      doctor: "Dr(a). Michel Santos",
+      prescriptionDate: "15/01/2025",
     },
     {
       id: "3",
@@ -41,10 +51,18 @@ export default function Tratamentos() {
       instructions: "1 comprimido antes de dormir",
       times: ["22:00"],
       enabled: false,
+      doctor: "Dr(a). Michel Santos",
+      prescriptionDate: "15/01/2025",
     },
   ]);
 
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedMedication, setSelectedMedication] = useState<Medication | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editedTimes, setEditedTimes] = useState<string[]>([]);
+  const [editedEnabled, setEditedEnabled] = useState(false);
+  const [newTime, setNewTime] = useState("");
+  const [hasChanges, setHasChanges] = useState(false);
 
   // Simulação de dias com diferentes status de adesão
   const adherenceDays = {
@@ -59,6 +77,43 @@ export default function Tratamentos() {
     if (adherenceDays.partial.includes(dayOfMonth)) return "bg-warning/20 text-warning hover:bg-warning/30";
     if (adherenceDays.missed.includes(dayOfMonth)) return "bg-destructive/20 text-destructive hover:bg-destructive/30";
     return "";
+  };
+
+  const handleOpenDialog = (med: Medication) => {
+    setSelectedMedication(med);
+    setEditedTimes([...med.times]);
+    setEditedEnabled(med.enabled);
+    setHasChanges(false);
+    setDialogOpen(true);
+  };
+
+  const handleAddTime = () => {
+    if (newTime && !editedTimes.includes(newTime)) {
+      setEditedTimes([...editedTimes, newTime]);
+      setNewTime("");
+      setHasChanges(true);
+    }
+  };
+
+  const handleRemoveTime = (time: string) => {
+    setEditedTimes(editedTimes.filter(t => t !== time));
+    setHasChanges(true);
+  };
+
+  const handleToggleEnabled = (checked: boolean) => {
+    setEditedEnabled(checked);
+    setHasChanges(true);
+  };
+
+  const handleSaveChanges = () => {
+    if (selectedMedication) {
+      setMedications(medications.map(med => 
+        med.id === selectedMedication.id 
+          ? { ...med, times: editedTimes, enabled: editedEnabled }
+          : med
+      ));
+      setDialogOpen(false);
+    }
   };
 
   return (
@@ -76,7 +131,11 @@ export default function Tratamentos() {
 
           <TabsContent value="atuais" className="space-y-4">
             {medications.map((med) => (
-              <Card key={med.id} className="shadow-[var(--shadow-card)] border-border/50">
+              <Card 
+                key={med.id} 
+                className="shadow-[var(--shadow-card)] border-border/50 cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => handleOpenDialog(med)}
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3">
@@ -88,7 +147,10 @@ export default function Tratamentos() {
                         <p className="text-sm text-muted-foreground">{med.dosage}</p>
                       </div>
                     </div>
-                    <Switch checked={med.enabled} />
+                    <Switch 
+                      checked={med.enabled} 
+                      onClick={(e) => e.stopPropagation()}
+                    />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -164,6 +226,119 @@ export default function Tratamentos() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl flex items-center gap-2">
+                <Pill className="h-5 w-5 text-primary" />
+                {selectedMedication?.name} {selectedMedication?.dosage}
+              </DialogTitle>
+            </DialogHeader>
+
+            <div className="space-y-6 py-4">
+              {/* Informações da Prescrição */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-base">Informações da Prescrição</h3>
+                <div className="space-y-2 text-sm">
+                  <div>
+                    <Label className="text-muted-foreground">Instruções</Label>
+                    <p className="mt-1">{selectedMedication?.instructions}</p>
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Médico Prescritor</Label>
+                    <p className="mt-1">{selectedMedication?.doctor}</p>
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Data da Prescrição</Label>
+                    <p className="mt-1">{selectedMedication?.prescriptionDate}</p>
+                  </div>
+                  <Button variant="outline" size="sm" className="mt-2 w-full">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Ver Receita Original
+                  </Button>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Gerenciar Lembretes */}
+              <div className="space-y-4">
+                <h3 className="font-semibold text-base">Meus Lembretes</h3>
+                
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="enable-reminders">Ativar Lembretes para este Medicamento</Label>
+                  <Switch
+                    id="enable-reminders"
+                    checked={editedEnabled}
+                    onCheckedChange={handleToggleEnabled}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Horários</Label>
+                  <div className="space-y-2">
+                    {editedTimes.map((time, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-muted">
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4 text-primary" />
+                          <span className="font-medium">{time}</span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemoveTime(time)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Input
+                    type="time"
+                    value={newTime}
+                    onChange={(e) => setNewTime(e.target.value)}
+                    placeholder="Selecione um horário"
+                  />
+                  <Button onClick={handleAddTime} size="icon">
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* Saiba Mais */}
+              <div className="space-y-3">
+                <h3 className="font-semibold text-base">Saiba Mais</h3>
+                <Card className="cursor-pointer hover:bg-muted/50 transition-colors">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                      <Play className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-sm">Assista a um vídeo sobre a {selectedMedication?.name}</p>
+                      <p className="text-xs text-muted-foreground">Aprenda mais sobre este medicamento</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button 
+                onClick={handleSaveChanges} 
+                disabled={!hasChanges}
+                className="w-full"
+              >
+                Salvar Alterações
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

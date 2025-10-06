@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { Home, Pill, FileText, Gift, Brain } from "lucide-react";
+import FloatingHelpButton from "./FloatingHelpButton";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +21,8 @@ export default function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background pb-20">
       {children}
+      
+      <FloatingHelpButton />
       
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border shadow-lg z-50">

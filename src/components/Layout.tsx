@@ -13,7 +13,6 @@ const navItems = [
   { icon: MessageCircle, label: "Mensagens", path: "/mensagens" },
   { icon: FileText, label: "Documentos", path: "/documentos" },
   { icon: Gift, label: "Benefícios", path: "/beneficios" },
-  { icon: Brain, label: "Mente Ativa", path: "/mente-ativa" },
 ];
 
 export default function Layout({ children }: LayoutProps) {

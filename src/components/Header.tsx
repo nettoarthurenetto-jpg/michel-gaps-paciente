@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { User, Bell, LogOut, UserCircle, Camera, ChevronRight, Shield, CreditCard, BellRing, Palette, HelpCircle, FileText, Lock, ChevronDown, Send, MessageSquare, AlertCircle } from "lucide-react";
+import { User, Bell, LogOut, UserCircle, Camera, ChevronRight, Shield, CreditCard, BellRing, Palette, HelpCircle, FileText, Lock, ChevronDown, Send, MessageSquare, AlertCircle, Brain } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -23,6 +24,7 @@ export default function Header({
   userAvatar,
   hasNotifications = true 
 }: HeaderProps) {
+  const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
   const [fullProfileOpen, setFullProfileOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -144,6 +146,20 @@ export default function Header({
                 <DialogTitle>Minha Conta</DialogTitle>
               </DialogHeader>
               <div className="flex flex-col gap-3 py-4">
+                <Button 
+                  variant="default" 
+                  className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    navigate('/mente-ativa');
+                  }}
+                >
+                  <Brain className="h-6 w-6" />
+                  <div className="text-left">
+                    <div className="font-semibold">Mente Ativa</div>
+                    <div className="text-xs opacity-90">Exercite sua mente</div>
+                  </div>
+                </Button>
                 <Button 
                   variant="outline" 
                   className="w-full justify-start gap-3 h-12"

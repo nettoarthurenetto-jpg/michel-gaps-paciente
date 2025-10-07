@@ -48,7 +48,7 @@ export default function FloatingHelpButton() {
         <DialogTrigger asChild>
           <Button
             size="icon"
-            className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 animate-fade-in"
+            className="fixed bottom-[88px] right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 animate-fade-in"
           >
             <HelpCircle className="h-6 w-6" />
           </Button>

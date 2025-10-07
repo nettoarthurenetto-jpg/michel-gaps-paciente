@@ -123,7 +123,7 @@ export default function Dashboard() {
         {/* Banner Mente Ativa */}
         <Link to="/mente-ativa">
           <Card className="bg-gradient-to-r from-accent/20 to-accent/10 border-accent/30 shadow-sm hover:shadow-md transition-all cursor-pointer">
-            <CardContent className="p-6">
+            <CardContent className="p-6 mt-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">

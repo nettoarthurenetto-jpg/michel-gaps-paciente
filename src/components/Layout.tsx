@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Home, Pill, FileText, Gift, Brain } from "lucide-react";
+import { Home, Pill, FileText, Gift, Brain, MessageCircle } from "lucide-react";
 import FloatingHelpButton from "./FloatingHelpButton";
 
 interface LayoutProps {
@@ -10,6 +10,7 @@ interface LayoutProps {
 const navItems = [
   { icon: Home, label: "Início", path: "/" },
   { icon: Pill, label: "Tratamentos", path: "/tratamentos" },
+  { icon: MessageCircle, label: "Mensagens", path: "/mensagens" },
   { icon: FileText, label: "Documentos", path: "/documentos" },
   { icon: Gift, label: "Benefícios", path: "/beneficios" },
   { icon: Brain, label: "Mente Ativa", path: "/mente-ativa" },

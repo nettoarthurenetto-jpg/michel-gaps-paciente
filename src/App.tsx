@@ -7,6 +7,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Tratamentos from "./pages/Tratamentos";
 import Mensagens from "./pages/Mensagens";
+import ConversationDetail from "./pages/ConversationDetail";
 import Documentos from "./pages/Documentos";
 import Beneficios from "./pages/Beneficios";
 import MenteAtiva from "./pages/MenteAtiva";
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Dashboard />} />
             <Route path="/tratamentos" element={<Tratamentos />} />
             <Route path="/mensagens" element={<Mensagens />} />
+            <Route path="/mensagens/:conversationId" element={<ConversationDetail />} />
             <Route path="/documentos" element={<Documentos />} />
             <Route path="/beneficios" element={<Beneficios />} />
             <Route path="/mente-ativa" element={<MenteAtiva />} />

@@ -47,8 +47,7 @@ export default function Mensagens() {
   const navigate = useNavigate();
 
   const handleConversationClick = (conversationId: string) => {
-    // Futura navegação para tela de conversa específica
-    console.log("Abrir conversa:", conversationId);
+    navigate(`/mensagens/${conversationId}`);
   };
 
   const getInitials = (name: string) => {

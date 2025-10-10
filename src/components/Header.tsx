@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { User, Bell, LogOut, UserCircle, Camera, ChevronRight, Shield, CreditCard, BellRing, Palette, HelpCircle, FileText, Lock, ChevronDown, Send, MessageSquare, AlertCircle, Brain } from "lucide-react";
+import { User, Bell, LogOut, UserCircle, Camera, ChevronRight, Shield, CreditCard, BellRing, Palette, HelpCircle, FileText, Lock, ChevronDown, Send, MessageSquare, AlertCircle, Brain, Wallet } from "lucide-react";
+import DigitalCard from "./DigitalCard";
 import { useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -31,6 +32,7 @@ export default function Header({
   const [bugReportOpen, setBugReportOpen] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [feedbackCategory, setFeedbackCategory] = useState("");
+  const [digitalCardOpen, setDigitalCardOpen] = useState(false);
 
   const handleLogout = () => {
     // Implementar lógica de logout aqui
@@ -158,6 +160,20 @@ export default function Header({
                   <div className="text-left">
                     <div className="font-semibold">Mente Ativa</div>
                     <div className="text-xs opacity-90">Exercite sua mente</div>
+                  </div>
+                </Button>
+                <Button 
+                  variant="gradient" 
+                  className="w-full justify-start gap-3 h-14 shadow-md"
+                  onClick={() => {
+                    setProfileOpen(false);
+                    setDigitalCardOpen(true);
+                  }}
+                >
+                  <Wallet className="h-6 w-6" />
+                  <div className="text-left">
+                    <div className="font-semibold">Minha Carteirinha GAPS</div>
+                    <div className="text-xs opacity-90">Identificação digital</div>
                   </div>
                 </Button>
                 <Button 
@@ -394,6 +410,14 @@ export default function Header({
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Carteirinha Digital */}
+          <DigitalCard
+            open={digitalCardOpen}
+            onOpenChange={setDigitalCardOpen}
+            userName={userName}
+            userAvatar={userAvatar}
+          />
         </div>
       </div>
     </header>
